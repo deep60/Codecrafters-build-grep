@@ -31,4 +31,9 @@ fn main() {
     // } else {
     //     process::exit(1)
     // }
+    if match_pattern(&input_line, &pattern) {
+        process::exit(0)
+    } else {
+        process::exit(1)
+    }
 }
