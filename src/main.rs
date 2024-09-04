@@ -4,21 +4,17 @@ use std::io;
 use std::process;
 
 fn match_pattern(input_line: &str, pattern: &str) -> bool {
-    if pattern.chars().count() == 0 {
+    if pattern.chars().count() == 1 {
+        return input_line.contains(pattern);
+    } else if pattern == r"\d" {
+        return input_line.chars().any(|c| c.is_numeric());
+    } else if pattern == r"\w" {
+        return input_line.chars().any(|c| c.is_alphanumeric());
+    } else if pattern.starts_with("[") && pattern.ends_with("]") {
+        let chars = pattern[1..pattern.len() - 1].chars().collect::<Vec<char>>();
+        return input_line.chars().any(|c| chars.contains(&c));
+    } else {
         panic!("Unhandled pattern: {}", pattern)
-    }
-
-    match pattern {
-        "\\d" => input_line.contains(|c: char| c.is_digit(10)),
-        "\\w" => input_line.chars().any(|c| c.is_alphanumeric()),
-        pattern => {
-            if pattern.chars().count() != 1 {
-                panic!("Unhandled pattern: {}", pattern)
-            }
-
-            let input_c = pattern.chars().nth(0).unwrap();
-            input_line.contains(input_c)
-        }
     }
 }
 
