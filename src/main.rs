@@ -3,18 +3,34 @@ use std::env;
 use std::io;
 use std::process;
 
+// fn match_pattern(input_line: &str, pattern: &str) -> bool {
+//     if pattern.chars().count() == 1 {
+//         return input_line.contains(pattern);
+//     } else if pattern == r"\d" {
+//         return input_line.chars().any(|c| c.is_numeric());
+//     } else if pattern == r"\w" {
+//         return input_line.chars().any(|c| c.is_alphanumeric());
+//     } else if pattern.starts_with("[") && pattern.ends_with("]") {
+//         let chars = pattern[1..pattern.len() - 1].chars().collect::<Vec<char>>();
+//         return input_line.chars().any(|c| chars.contains(&c));
+//     } else {
+//         panic!("Unhandled pattern: {}", pattern)
+//     }
+// }
+
 fn match_pattern(input_line: &str, pattern: &str) -> bool {
-    if pattern.chars().count() == 1 {
-        return input_line.contains(pattern);
-    } else if pattern == r"\d" {
-        return input_line.chars().any(|c| c.is_numeric());
-    } else if pattern == r"\w" {
-        return input_line.chars().any(|c| c.is_alphanumeric());
-    } else if pattern.starts_with("[") && pattern.ends_with("]") {
-        let chars = pattern[1..pattern.len() - 1].chars().collect::<Vec<char>>();
-        return input_line.chars().any(|c| chars.contains(&c));
-    } else {
-        panic!("Unhandled pattern: {}", pattern)
+    match pattern {
+        s if s.chars().count() == 1 => input_line.contains(pattern),
+        r#"\d"# => input_line.parse::<i64>().is_ok(),
+        r#"\w"# => input_line.chars().all(|x| char::is_ascii_alphanumeric(&x)),
+        s if s.starts_with("[^") && s.ends_with(']') => {
+            let cuttern = &pattern[2..pattern.len() - 1];
+            !input_line.chars().any(|c| cuttern.contains(c))
+        }
+        s if s.starts_with('[') && s.ends_with(']') => pattern[1..pattern.len() - 1]
+            .chars()
+            .any(|c| input_line.contains(c)),
+        _ => false,
     }
 }
 
